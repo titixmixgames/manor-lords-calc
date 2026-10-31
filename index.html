@@ -90,6 +90,7 @@
         }
 
         *, *::before, *::after { box-sizing: border-box; }
+        button, input { font-family: inherit; }
         html { -webkit-text-size-adjust: 100%; }
 
         body {
@@ -416,7 +417,7 @@
         .chips-label { margin-right: 2px; font-size: 14.5px; font-style: italic; color: var(--ink-3); }
         .chip {
             min-width: 52px; height: 40px; padding: 0 10px; cursor: pointer;
-            font: 700 17px/1 var(--f-display); font-variant-numeric: lining-nums tabular-nums; color: var(--bronze-hi);
+            font: 600 17px/1 var(--f-body); font-variant-numeric: lining-nums tabular-nums; color: var(--bronze-hi);
             background: linear-gradient(#2b2217, #1a140d); border: 1px solid var(--line); border-radius: 2px;
             transition: background .2s, color .2s, border-color .2s, transform .1s;
         }
@@ -426,7 +427,7 @@
         .chip:focus-visible, .btn-text:focus-visible { outline: 1px dashed var(--bronze-hi); outline-offset: 2px; }
         .btn-text {
             display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 44px; padding: 0 16px;
-            font: 700 17px/1 var(--f-display); letter-spacing: .02em; color: var(--bronze-hi);
+            font: 600 17px/1 var(--f-body); letter-spacing: .02em; color: var(--bronze-hi);
             background: transparent; border: 1px solid var(--line); border-radius: 2px; cursor: pointer;
             transition: background .2s, border-color .2s, transform .1s;
         }
@@ -456,7 +457,7 @@
 
         .toast {
             position: fixed; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 50;
-            padding: 12px 20px; font: 600 17px/1.2 var(--f-display); color: var(--ink);
+            padding: 12px 20px; font: 500 17px/1.2 var(--f-body); color: var(--ink);
             background: #120e09; border: 1px solid var(--bronze); border-radius: 2px; box-shadow: 0 10px 30px rgba(0, 0, 0, .6);
             opacity: 0; transform: translate(-50%, 16px); pointer-events: none; transition: opacity .3s, transform .3s var(--ease);
         }
@@ -467,7 +468,7 @@
         .lang { position: absolute; top: 16px; right: 22px; z-index: 2; display: flex; border: 1px solid var(--line); border-radius: 2px; overflow: hidden; background: var(--well); }
         .lang button {
             min-width: 40px; height: 34px; padding: 0 8px; border: 0; cursor: pointer;
-            font: 700 14px/1 var(--f-display); letter-spacing: .08em; color: var(--ink-3); background: transparent;
+            font: 600 14px/1 var(--f-body); letter-spacing: .08em; color: var(--ink-3); background: transparent;
             transition: color .2s, background .2s;
         }
         .lang button + button { border-left: 1px solid var(--line-soft); }
@@ -486,7 +487,7 @@
         .kofi {
             display: inline-flex; align-items: center; justify-content: center; gap: 10px;
             min-height: 46px; padding: 0 22px;
-            font: 700 18px/1 var(--f-display); letter-spacing: .03em; text-decoration: none;
+            font: 600 18px/1 var(--f-body); letter-spacing: .03em; text-decoration: none;
             color: #1a140d;
             background: linear-gradient(180deg, #ecd08a, #c49a4c);
             border: 1px solid #f3dfa8; border-radius: 2px;
@@ -617,15 +618,15 @@
                         </g>
 
                         <g class="px" style="--d:5">
-                            <path d="M0 160 C100 150 140 140 200 142 S340 152 400 150 S540 134 600 138 S740 150 800 152 V240 H0Z" fill="#3a3322"/>
-                            <g transform="translate(26 -18)"><polygon points="241,146 259,146 255,120 245,120" fill="#1d170f"/>
+                            
+                            <g transform="translate(26 -14)"><polygon points="241,146 259,146 255,120 245,120" fill="#1d170f"/>
                             <polygon points="243,120 250,109 257,120" fill="#1d170f"/>
                             <g class="blades" stroke="#1d170f" stroke-linecap="butt">
                                 <path d="M250 114 V89 M250 114 H275 M250 114 V139 M250 114 H225" stroke-width="2.200"/>
                                 <path d="M252 112 V92 M252 116 H272 M248 116 V136 M248 112 H228" stroke-width="5" opacity=".9"/>
                             </g>
                             <circle cx="250" cy="114" r="2.600" fill="#2a2013"/></g>
-                            <g transform="translate(430 -10)" fill="#1d170f">
+                            <g transform="translate(430 -4)" fill="#1d170f">
                                 <polygon points="0,138 0,126 8,118 16,126 16,138"/>
                                 <polygon points="22,138 22,124 32,115 42,124 42,138"/>
                                 <rect x="50" y="108" width="10" height="30"/><polygon points="48,108 55,90 62,108"/><rect x="60" y="124" width="24" height="14"/>
@@ -639,6 +640,7 @@
                                     <rect class="win" style="animation-delay:-2.8s" x="53.500" y="116" width="3" height="6"/>
                                 </g>
                             </g>
+                            <path transform="translate(0 -18)" d="M0 160 C100 150 140 140 200 142 S340 152 400 150 S540 134 600 138 S740 150 800 152 V240 H0Z" fill="#3a3322"/>
                         </g>
                         <g class="px" style="--d:7">
                             <path d="M0 196 C150 178 260 172 380 184 S620 176 800 190 V240 H0Z" fill="url(#hFurrow)"/>
