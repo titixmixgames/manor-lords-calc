@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#12100c">
+    <meta name="color-scheme" content="dark">
+
+    <!-- SEO -->
+    <title>Manor Lords Farming Calculator – Crop Yield, Morgens &amp; Families</title>
+    <meta name="description" content="Free Manor Lords farming calculator: work out your crop yield, how many families you need per morgen, and stop your harvest from rotting. Calculadora de cosechas disponible en español.">
+    <meta name="keywords" content="Manor Lords farming calculator, Manor Lords crop yield, morgen to families, Manor Lords calculadora, Manor Lords cosecha, Manor Lords granja, Manor Lords wheat, Manor Lords guide">
+    <meta name="author" content="Manor Lords Farming Calculator">
+    <meta name="robots" content="index, follow">
+    <!-- TODO: sustituye por tu dominio real tras el despliegue -->
+    <link rel="canonical" href="https://TU-DOMINIO.com/">
+
+    <!-- Open Graph (Reddit, Discord, Facebook, WhatsApp) -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Manor Lords Farming Calculator">
+    <meta property="og:title" content="Manor Lords Farming Calculator – How many families does your farm need?">
+    <meta property="og:description" content="Calculate crop yield and the minimum families per morgen. Don't let your wheat rot this winter.">
+    <meta property="og:url" content="https://TU-DOMINIO.com/">
+    <!-- TODO: sube una imagen 1200x630 px (og-image.png) a la raíz del proyecto -->
+    <meta property="og:image" content="https://TU-DOMINIO.com/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Farming calculator for Manor Lords">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="es_ES">
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Manor Lords Farming Calculator">
+    <meta name="twitter:description" content="Crop yield and families needed per morgen. Free tool for Manor Lords players.">
+    <meta name="twitter:image" content="https://TU-DOMINIO.com/og-image.png">
+
+    <!-- Datos estructurados -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Manor Lords Farming Calculator",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Any",
+      "inLanguage": ["es", "en"],
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+      "description": "Crop yield and families-per-morgen calculator for Manor Lords."
+    }
+    </script>
+
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 28 6v9c0 7-5 12-12 15C9 27 4 22 4 15V6z' fill='%231b1610' stroke='%23d9b86f' stroke-width='2'/%3E%3Cpath d='M16 24V10M16 10c-2-1-3-3-3-5 2 1 3 3 3 5zm0 0c2-1 3-3 3-5-2 1-3 3-3 5zm0 6c-3-.5-4.500-2.500-4.800-5 2.800.3 4.500 2.200 4.800 5zm0 0c3-.5 4.500-2.500 4.800-5-2.800.3-4.500 2.200-4.800 5z' fill='none' stroke='%23d9b86f' stroke-width='1.600'/%3E%3C/svg%3E">
+
+    <!-- Fuentes (sin dependencias de CSS externas: todo el estilo está en este archivo) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=IM+Fell+English+SC&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================================
+           TOKENS
+           Paleta inspirada en la UI del juego: paneles marrón oscuro,
+           ribetes de bronce, texto crema y tonos tierra apagados.
+        ========================================================= */
+        :root {
+            --bg:        #12100c;
+            --panel:     #1a150f;
+            --panel-hi:  #231c13;
+            --well:      #100d09;
+
+            --ink:       #f0e7d3;
+            --ink-2:     #c9bb9b;
+            --ink-3:     #9a8d72;
+
+            --bronze:    #a8854a;
+            --bronze-hi: #d9b86f;
+            --line:      rgba(168, 133, 74, .38);
+            --line-soft: rgba(168, 133, 74, .18);
+
+            --moss:      #98b065;
+            --amber:     #d8a63e;
+            --blood:     #cf6153;
+            --steel:     #86a8c4;
+
+            --f-display: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+            --f-body:    'EB Garamond', 'Iowan Old Style', Georgia, serif;
+            --f-mark:    'IM Fell English SC', 'Iowan Old Style', Georgia, serif;
+
+            --ease: cubic-bezier(.22, 1, .36, 1);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        html { -webkit-text-size-adjust: 100%; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            min-height: 100dvh;
+            color: var(--ink);
+            font: 400 17px/1.5 var(--f-body);
+            font-variant-numeric: lining-nums;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+            background:
+                radial-gradient(120% 70% at 50% -10%, #3a2e1e 0%, transparent 60%),
+                radial-gradient(90% 45% at 50% 112%, #202c17 0%, transparent 70%),
+                var(--bg);
+        }
+
+        /* Grano de tela/papel muy sutil */
+        body::before {
+            content: "";
+            position: fixed; inset: 0; pointer-events: none; opacity: .08;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .9 0 0 0 0 .7 0 0 0 .7 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        /* Surcos de campo al fondo */
+        body::after {
+            content: "";
+            position: fixed; left: 0; right: 0; bottom: 0; height: 34vh; pointer-events: none;
+            background: repeating-linear-gradient(103deg, rgba(140, 170, 80, .07) 0 2px, transparent 2px 15px);
+            -webkit-mask-image: linear-gradient(to top, #000, transparent);
+                    mask-image: linear-gradient(to top, #000, transparent);
+        }
+
+        /* =========================================================
+           LAYOUT
+        ========================================================= */
+        .wrap {
+            position: relative; z-index: 1;
+            min-height: 100vh; min-height: 100dvh;
+            display: flex; align-items: flex-start; justify-content: center;
+            padding: 20px 14px max(28px, env(safe-area-inset-bottom));
+        }
+        @media (min-width: 600px) { .wrap { align-items: center; padding: 40px 24px; } }
+
+        .panel {
+            position: relative;
+            width: 100%; max-width: 500px;
+            background: linear-gradient(180deg, var(--panel-hi), var(--panel));
+            border: 1px solid var(--line);
+            border-radius: 3px;
+            box-shadow:
+                0 0 0 4px #0c0a07,
+                0 0 0 5px var(--line-soft),
+                0 40px 70px -25px rgba(0, 0, 0, .85),
+                inset 0 1px 0 rgba(255, 255, 255, .05);
+        }
+        @media (min-width: 900px) { .panel { max-width: 940px; } }
+
+        /* Esquinas ornamentales */
+        .corner { position: absolute; width: 14px; height: 14px; border: 0 solid var(--bronze-hi); opacity: .85; pointer-events: none; }
+        .corner.tl { top: 8px; left: 8px;  border-top-width: 1px; border-left-width: 1px; }
+        .corner.tr { top: 8px; right: 8px; border-top-width: 1px; border-right-width: 1px; }
+        .corner.bl { bottom: 8px; left: 8px;  border-bottom-width: 1px; border-left-width: 1px; }
+        .corner.br { bottom: 8px; right: 8px; border-bottom-width: 1px; border-right-width: 1px; }
+
+        /* =========================================================
+           CABECERA
+        ========================================================= */
+        .masthead { text-align: center; padding: 30px 24px 22px; border-bottom: 1px solid var(--line-soft); }
+        .emblem { width: 40px; height: 44px; color: var(--bronze-hi); filter: drop-shadow(0 2px 6px rgba(0,0,0,.6)); }
+        .eyebrow {
+            margin: 10px 0 2px;
+            font: 600 13px/1 var(--f-display);
+            letter-spacing: .28em; text-transform: uppercase; color: var(--ink-3);
+        }
+        h1 {
+            margin: 0;
+            font: 400 clamp(34px, 9vw, 44px)/1.1 var(--f-mark);
+            letter-spacing: .04em; color: var(--bronze-hi);
+            text-shadow: 0 2px 0 #000, 0 0 24px rgba(217, 184, 111, .18);
+        }
+        .tagline { margin: 6px 0 0; font-style: italic; color: var(--ink-2); font-size: 16px; }
+
+        /* =========================================================
+           COLUMNAS
+        ========================================================= */
+        .cols { display: grid; }
+        .col { padding: 24px 22px; }
+        .col-results { border-top: 1px solid var(--line-soft); }
+        @media (min-width: 900px) {
+            .cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+            .col { padding: 30px 34px; }
+            .col-results { border-top: 0; border-left: 1px solid var(--line-soft); }
+        }
+
+        .section-title {
+            display: flex; align-items: center; gap: 12px; margin: 0 0 20px;
+            font: 600 13px/1 var(--f-display); letter-spacing: .26em; text-transform: uppercase; color: var(--bronze);
+        }
+        .section-title::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--line), transparent); }
+
+        /* =========================================================
+           CAMPOS
+        ========================================================= */
+        .field { margin-bottom: 22px; }
+        .field-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .field label, .crew .label {
+            font: 700 21px/1.1 var(--f-display); color: var(--ink); letter-spacing: .01em;
+        }
+
+        .readout { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .unit { font-size: 15px; color: var(--ink-3); font-style: italic; min-width: 3.4ch; }
+
+        input[type=number] {
+            -moz-appearance: textfield; appearance: textfield;
+            width: 72px; height: 44px; padding: 0 6px; text-align: center;
+            font: 700 24px/1 var(--f-display); font-variant-numeric: lining-nums tabular-nums;
+            color: var(--bronze-hi);
+            background: var(--well);
+            border: 1px solid var(--line); border-radius: 2px;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, .65);
+            transition: border-color .2s, box-shadow .2s;
+        }
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number]:focus { outline: none; border-color: var(--bronze-hi); box-shadow: inset 0 2px 6px rgba(0,0,0,.65), 0 0 0 3px rgba(217,184,111,.18); }
+
+        .scale { display: flex; justify-content: space-between; margin-top: -2px; font-size: 13.5px; color: var(--ink-3); }
+
+        /* Sliders */
+        input[type=range] {
+            --fill: 50%; --c1: #8a6a36; --c2: #d9b86f;
+            -webkit-appearance: none; appearance: none;
+            display: block; width: 100%; height: 44px; margin: 0;
+            background: transparent; cursor: pointer; touch-action: pan-y;
+        }
+        input[type=range]:focus-visible { outline: 1px dashed var(--bronze-hi); outline-offset: 2px; }
+        input[type=range]::-webkit-slider-runnable-track {
+            height: 6px; border-radius: 3px;
+            background: linear-gradient(90deg, transparent var(--fill), #0e0b07 var(--fill)), linear-gradient(90deg, var(--c1), var(--c2));
+            box-shadow: 0 0 0 1px #080604, inset 0 1px 2px rgba(0, 0, 0, .6);
+        }
+        input[type=range]::-moz-range-track {
+            height: 6px; border-radius: 3px;
+            background: linear-gradient(90deg, transparent var(--fill), #0e0b07 var(--fill)), linear-gradient(90deg, var(--c1), var(--c2));
+            box-shadow: 0 0 0 1px #080604, inset 0 1px 2px rgba(0, 0, 0, .6);
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 24px; height: 24px; margin-top: -9px; border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #f3dfa8, #b08d4f 55%, #6b5124);
+            border: 2px solid #14100a;
+            box-shadow: 0 0 0 1px var(--bronze-hi), 0 3px 6px rgba(0, 0, 0, .65);
+            transition: transform .15s var(--ease);
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 24px; height: 24px; border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #f3dfa8, #b08d4f 55%, #6b5124);
+            border: 2px solid #14100a;
+            box-shadow: 0 0 0 1px var(--bronze-hi), 0 3px 6px rgba(0, 0, 0, .65);
+        }
+        input[type=range]:active::-webkit-slider-thumb { transform: scale(1.12); }
+        #fertility { --c1: #7d5130; --c2: #9db86a; }
+
+        /* Selector de familias */
+        .crew {
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            padding: 14px 14px 14px 16px; margin-top: 6px;
+            background: var(--well); border: 1px solid var(--line-soft); border-radius: 2px;
+        }
+        .crew small { display: block; font: italic 400 14px/1.2 var(--f-body); color: var(--ink-3); margin-top: 3px; }
+        .stepper { display: flex; align-items: center; gap: 8px; }
+        .stepper input[type=number] { width: 60px; }
+        .btn {
+            width: 44px; height: 44px; display: grid; place-items: center; padding: 0;
+            color: var(--bronze-hi);
+            background: linear-gradient(#2b2217, #1a140d);
+            border: 1px solid var(--bronze); border-radius: 2px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06), 0 2px 4px rgba(0, 0, 0, .4);
+            cursor: pointer; user-select: none; -webkit-user-select: none;
+            transition: border-color .2s, background .2s, transform .1s;
+        }
+        .btn:hover { border-color: var(--bronze-hi); background: linear-gradient(#35291b, #20180f); }
+        .btn:active { transform: translateY(1px); background: #120e09; }
+        .btn:focus-visible { outline: 1px dashed var(--bronze-hi); outline-offset: 2px; }
+        .btn svg { width: 16px; height: 16px; }
+
+        /* =========================================================
+           RESULTADOS
+        ========================================================= */
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0 0 20px; }
+        .stat {
+            padding: 16px 8px 14px; text-align: center;
+            background: var(--well); border: 1px solid var(--line-soft); border-radius: 2px;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, .35);
+        }
+        .stat svg.ico { width: 24px; height: 24px; color: var(--bronze); }
+        .stat dt { margin: 6px 0 0; font-size: 14.5px; color: var(--ink-2); line-height: 1.2; }
+        .stat dd { margin: 0; }
+        .stat .num {
+            display: block; margin-top: 4px;
+            font: 700 clamp(44px, 12vw, 58px)/1 var(--f-display); font-variant-numeric: lining-nums tabular-nums;
+            color: var(--ink); text-shadow: 0 2px 0 rgba(0, 0, 0, .6);
+        }
+        .stat .hint { display: block; margin-top: 4px; font-size: 13px; font-style: italic; color: var(--ink-3); }
+
+        .meter-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; font-size: 15px; color: var(--ink-2); }
+        .meter-head b { font: 700 19px/1 var(--f-display); font-variant-numeric: lining-nums tabular-nums; color: var(--ink); }
+        .meter { height: 10px; background: var(--well); border: 1px solid #080604; border-radius: 5px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,.7); }
+        .meter-fill {
+            height: 100%; width: 0; border-radius: 5px;
+            background: linear-gradient(180deg, rgba(255,255,255,.18), transparent 60%), var(--tone, var(--moss));
+            transition: width .5s var(--ease), background-color .3s;
+        }
+        .meter-fill[data-level="ok"]   { --tone: var(--moss); }
+        .meter-fill[data-level="mid"]  { --tone: var(--amber); }
+        .meter-fill[data-level="low"]  { --tone: var(--blood); }
+
+        .roster { display: flex; flex-wrap: wrap; gap: 5px; margin: 16px 0 8px; min-height: 22px; }
+        .pip { width: 22px; height: 22px; fill: currentColor; stroke: none; }
+        .pip.is-ok      { color: var(--moss); }
+        .pip.is-missing { color: var(--blood); fill: none; stroke: currentColor; stroke-width: 1.1; stroke-dasharray: 2 1.4; }
+        .pip.is-extra   { color: var(--steel); opacity: .75; }
+        .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0 0 18px; padding: 0; list-style: none; font-size: 13.5px; color: var(--ink-3); }
+        .legend li { display: inline-flex; align-items: center; gap: 6px; }
+        .legend .pip { width: 14px; height: 14px; }
+
+        .effective {
+            display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+            margin: 0 0 20px; padding: 12px 0;
+            border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft);
+            color: var(--ink-2); font-size: 16px;
+        }
+        .effective b { font: 700 28px/1 var(--f-display); font-variant-numeric: lining-nums tabular-nums; color: var(--bronze-hi); }
+        .effective small { display: block; font-size: 13px; font-style: italic; color: var(--ink-3); }
+
+        /* Estado */
+        .status {
+            --tone: var(--moss);
+            display: flex; gap: 14px; align-items: flex-start;
+            padding: 15px 16px;
+            background: rgba(255, 255, 255, .02);
+            background: color-mix(in srgb, var(--tone) 9%, var(--well));
+            border: 1px solid var(--line-soft); border-left: 3px solid var(--tone);
+            border-radius: 2px;
+        }
+        .status[data-tone="deficit"] { --tone: var(--blood); }
+        .status[data-tone="optimal"] { --tone: var(--moss); }
+        .status[data-tone="surplus"] { --tone: var(--steel); }
+        .status svg { flex: none; width: 26px; height: 26px; margin-top: 1px; color: var(--tone); }
+        .status h3 { margin: 0; font: 700 19px/1.15 var(--f-display); letter-spacing: .02em; color: var(--tone); }
+        .status p { margin: 4px 0 0; font-size: 16px; line-height: 1.4; color: var(--ink-2); }
+        .status strong { color: var(--ink); font-weight: 600; }
+
+        /* Selector de idioma */
+        .lang { position: absolute; top: 16px; right: 22px; z-index: 2; display: flex; border: 1px solid var(--line); border-radius: 2px; overflow: hidden; background: var(--well); }
+        .lang button {
+            min-width: 40px; height: 34px; padding: 0 8px; border: 0; cursor: pointer;
+            font: 700 14px/1 var(--f-display); letter-spacing: .08em; color: var(--ink-3); background: transparent;
+            transition: color .2s, background .2s;
+        }
+        .lang button + button { border-left: 1px solid var(--line-soft); }
+        .lang button:hover { color: var(--bronze-hi); }
+        .lang button[aria-pressed="true"] { color: #1a140d; background: linear-gradient(180deg, #ecd08a, #c49a4c); }
+        .lang button:focus-visible { outline: 1px dashed var(--bronze-hi); outline-offset: -3px; }
+
+        /* Apoyo (Ko-fi) */
+        .support {
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            padding: 22px 24px; text-align: center;
+            border-top: 1px solid var(--line-soft);
+            background: radial-gradient(60% 120% at 50% 0%, rgba(217, 184, 111, .07), transparent 70%);
+        }
+        .support p { margin: 0; max-width: 34ch; font-size: 16px; line-height: 1.4; color: var(--ink-2); font-style: italic; }
+        .kofi {
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            min-height: 46px; padding: 0 22px;
+            font: 700 18px/1 var(--f-display); letter-spacing: .03em; text-decoration: none;
+            color: #1a140d;
+            background: linear-gradient(180deg, #ecd08a, #c49a4c);
+            border: 1px solid #f3dfa8; border-radius: 2px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), 0 3px 10px rgba(0, 0, 0, .5);
+            transition: transform .15s var(--ease), filter .2s, box-shadow .2s;
+        }
+        .kofi svg { width: 20px; height: 20px; flex: none; }
+        .kofi:hover { filter: brightness(1.08); box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 5px 14px rgba(0,0,0,.55); }
+        .kofi:active { transform: translateY(1px); }
+        .kofi:focus-visible { outline: 1px dashed var(--bronze-hi); outline-offset: 3px; }
+
+        /* Pie */
+        .foot { padding: 14px 24px 18px; border-top: 1px solid var(--line-soft); text-align: center; font-size: 13.5px; line-height: 1.4; color: var(--ink-3); }
+
+        noscript p { margin: 20px; text-align: center; color: var(--ink-2); }
+
+        /* =========================================================
+           MOVIMIENTO
+        ========================================================= */
+        .tick { animation: tick .32s var(--ease); }
+        @keyframes tick { from { opacity: .35; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+        .swap { animation: swap .4s var(--ease); }
+        @keyframes swap { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Iconos (sprite SVG) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <symbol id="i-wheat" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22V9"/>
+                <path d="M12 9c-2-1-3-3-3-5.500 2 1 3 3 3 5.500zM12 9c2-1 3-3 3-5.500-2 1-3 3-3 5.500z"/>
+                <path d="M12 14.500c-2.800-.5-4.300-2.500-4.600-5 2.800.4 4.300 2.300 4.600 5zM12 14.500c2.800-.5 4.300-2.500 4.600-5-2.800.4-4.300 2.300-4.600 5z"/>
+                <path d="M12 20c-2.800-.5-4.300-2.500-4.600-5 2.800.4 4.300 2.300 4.600 5zM12 20c2.800-.5 4.300-2.500 4.600-5-2.800.4-4.300 2.300-4.600 5z"/>
+            </g>
+        </symbol>
+        <symbol id="i-people" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="8" r="3"/>
+                <path d="M3.500 19.500c0-3.200 2.500-5.500 5.500-5.500s5.500 2.300 5.500 5.500"/>
+                <circle cx="17" cy="9" r="2.400"/>
+                <path d="M16 14c2.700 0 4.500 1.800 4.500 4.800"/>
+            </g>
+        </symbol>
+        <symbol id="i-person" viewBox="0 0 16 16">
+            <circle cx="8" cy="5" r="3"/>
+            <path d="M2.500 14.500c0-3 2.500-5 5.500-5s5.500 2 5.500 5z"/>
+        </symbol>
+        <symbol id="i-alert" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3.500 21.500 20h-19z"/><path d="M12 10v5M12 17.500v.1"/>
+            </g>
+        </symbol>
+        <symbol id="i-check" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"/><path d="m8 12.300 2.800 2.800 5.200-5.600"/>
+            </g>
+        </symbol>
+        <symbol id="i-info" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"/><path d="M12 11v5.500M12 7.800v.1"/>
+            </g>
+        </symbol>
+        <symbol id="i-minus" viewBox="0 0 16 16"><path d="M3 8h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+        <symbol id="i-cup" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 8h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/>
+                <path d="M16 9.500h1.500a2.500 2.500 0 0 1 0 5H16"/>
+                <path d="M7 3.500v1.500M10 3v2M13 3.500v1.500"/>
+            </g>
+        </symbol>
+        <symbol id="i-plus"  viewBox="0 0 16 16"><path d="M3 8h10M8 3v10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    </svg>
+
+    <main class="wrap">
+        <div class="panel">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+
+            <div class="lang" role="group" data-i18n-aria="ariaLang" aria-label="Language">
+                <button type="button" data-lang="en" aria-pressed="true">EN</button>
+                <button type="button" data-lang="es" aria-pressed="false">ES</button>
+            </div>
+
+            <header class="masthead">
+                <svg class="emblem" viewBox="0 0 24 27" aria-hidden="true">
+                    <path d="M12 1.500 22 5v8c0 6-4.500 10.500-10 12.500C6.500 23.500 2 19 2 13V5z" fill="#14100a" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                    <use href="#i-wheat" x="5.500" y="4.500" width="13" height="13" style="color:currentColor"/>
+                </svg>
+                <p class="eyebrow" data-i18n="eyebrow">Harvest Calculator</p>
+                <h1>Manor Lords</h1>
+                <p class="tagline" data-i18n="tagline">How many hands does your field need?</p>
+            </header>
+
+            <div class="cols">
+                <!-- ENTRADAS -->
+                <section class="col" aria-labelledby="t-params">
+                    <h2 class="section-title" id="t-params" data-i18n="tParams">Your farm</h2>
+
+                    <div class="field">
+                        <div class="field-head">
+                            <label for="morgens" data-i18n="fieldSize">Field size</label>
+                            <div class="readout">
+                                <input type="number" id="morgensNum" inputmode="decimal" step="0.1" min="0.1" max="5" data-i18n-aria="ariaMorgens" aria-label="Field size in morgens, exact value">
+                                <span class="unit">morgens</span>
+                            </div>
+                        </div>
+                        <input type="range" id="morgens" min="0.1" max="5" step="0.1" value="2.5">
+                        <div class="scale"><span>0.1</span><span>5.0</span></div>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-head">
+                            <label for="fertility" data-i18n="fertility">Soil fertility</label>
+                            <div class="readout">
+                                <input type="number" id="fertilityNum" inputmode="numeric" step="1" min="0" max="100" data-i18n-aria="ariaFertility" aria-label="Soil fertility in percent, exact value">
+                                <span class="unit">%</span>
+                            </div>
+                        </div>
+                        <input type="range" id="fertility" min="0" max="100" step="1" value="60">
+                        <div class="scale"><span data-i18n="scaleLow">Barren</span><span data-i18n="scaleHigh">Optimal</span></div>
+                    </div>
+
+                    <div class="crew">
+                        <label for="assignedFamilies" class="label" data-i18n-html="crew">Assigned families<small>working the farm</small></label>
+                        <div class="stepper">
+                            <button type="button" class="btn" id="famMinus" data-i18n-aria="ariaMinus" aria-label="Remove one family"><svg><use href="#i-minus"/></svg></button>
+                            <input type="number" id="assignedFamilies" inputmode="numeric" step="1" min="0" max="30">
+                            <button type="button" class="btn" id="famPlus" data-i18n-aria="ariaPlus" aria-label="Add one family"><svg><use href="#i-plus"/></svg></button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- RESULTADOS -->
+                <section class="col col-results" aria-labelledby="t-res">
+                    <h2 class="section-title" id="t-res" data-i18n="tRes">Projection</h2>
+
+                    <dl class="stats">
+                        <div class="stat">
+                            <svg class="ico" aria-hidden="true"><use href="#i-wheat"/></svg>
+                            <dt data-i18n="yieldLabel">Wheat yield</dt>
+                            <dd><span class="num" id="yieldOut">0</span><span class="hint" data-i18n="yieldHint">food units</span></dd>
+                        </div>
+                        <div class="stat">
+                            <svg class="ico" aria-hidden="true"><use href="#i-people"/></svg>
+                            <dt data-i18n="famLabel">Minimum families</dt>
+                            <dd><span class="num" id="reqFamOut">0</span><span class="hint" data-i18n="famHint">0.6 morgens each</span></dd>
+                        </div>
+                    </dl>
+
+                    <div class="meter-head"><span data-i18n="coverage">Workforce coverage</span><b id="coverageText">0%</b></div>
+                    <div class="meter" id="coverageBar" role="progressbar" data-i18n-aria="coverage" aria-label="Workforce coverage" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                        <div class="meter-fill" id="coverageFill" data-level="ok"></div>
+                    </div>
+
+                    <div class="roster" id="roster" role="img" aria-label=""></div>
+                    <ul class="legend" aria-hidden="true">
+                        <li><svg class="pip is-ok"><use href="#i-person"/></svg><span data-i18n="legCovered">Staffed</span></li>
+                        <li><svg class="pip is-missing"><use href="#i-person"/></svg><span data-i18n="legMissing">Missing</span></li>
+                        <li><svg class="pip is-extra"><use href="#i-person"/></svg><span data-i18n="legSpare">Spare</span></li>
+                    </ul>
+
+                    <p class="effective">
+                        <span data-i18n-html="effective">Estimated effective harvest<small>with current workforce</small></span>
+                        <b id="effectiveOut">0</b>
+                    </p>
+
+                    <div class="status" id="warningBox" role="status" aria-live="polite" data-tone="optimal"></div>
+                </section>
+            </div>
+
+            <aside class="support" data-i18n-aria="supportAria" aria-label="Support the project">
+                <p data-i18n="supportText">Did this save your harvest? Help me keep making tools for Manor Lords.</p>
+                <a class="kofi" href="https://ko-fi.com/titixmixgames" target="_blank" rel="noopener noreferrer">
+                    <svg aria-hidden="true"><use href="#i-cup"/></svg>
+                    <span data-i18n="supportBtn">Buy me a coffee</span>
+                </a>
+            </aside>
+
+            <footer class="foot" data-i18n-html="footer">
+                Estimates based on community knowledge: 1 family ≈ 0.6 morgens · 1 morgen at 100% ≈ 80 food units.<br>
+                Unofficial tool, not affiliated with Hooded Horse or Slavic Magic.
+            </footer>
+            <noscript><p>This calculator needs JavaScript to work. · Esta calculadora necesita JavaScript.</p></noscript>
+        </div>
+    </main>
+
+    <script>
+    (() => {
+        'use strict';
+
+        /* ============ 1. CONFIGURACIÓN ============ */
+        const CONFIG = {
+            // Valores de la comunidad. Ajusta aquí si cambian con un parche.
+            MORGENS_PER_FAMILY: 0.6,
+            YIELD_PER_MORGEN_AT_100: 80,
+            MORGENS:   { min: 0.1, max: 5,   def: 2.5 },
+            FERTILITY: { min: 0,   max: 100, def: 60 },
+            FAMILIES:  { min: 0,   max: 30,  def: 2 }
+        };
+
+        /* ============ 2. UTILIDADES ============ */
+        const $ = (id) => document.getElementById(id);
+
+        /**
+         * Convierte cualquier entrada en un número válido dentro de [min, max].
+         * Gestiona NaN, vacío, Infinity, notación científica, comas y negativos.
+         */
+        function sanitize(raw, { min, max }, fallback, decimals = 0) {
+            const n = typeof raw === 'number' ? raw : parseFloat(String(raw).replace(',', '.'));
+            if (!Number.isFinite(n)) return fallback;
+            const clamped = Math.min(max, Math.max(min, n));
+            const f = 10 ** decimals;
+            return Math.round(clamped * f) / f;
+        }
+
+        /** Reinicia una animación CSS en un elemento. */
+        function replay(el, cls) {
+            el.classList.remove(cls);
+            void el.offsetWidth; // fuerza reflow
+            el.classList.add(cls);
+        }
+
+        /** Pinta el relleno de un slider mediante una variable CSS. */
+        function paintSlider(el) {
+            const pct = ((el.value - el.min) / (el.max - el.min)) * 100;
+            el.style.setProperty('--fill', pct + '%');
+        }
+
+        
+
+        /* ============ 3. LÓGICA DE JUEGO (pura, sin DOM) ============ */
+        function computeFarm({ morgens, fertility, families }) {
+            // Trabajamos en décimas de morgen (enteros) para evitar errores de coma flotante:
+            // en JS, 3.0 / 0.6 = 5.000000000000001 y Math.ceil daría 6 en vez de 5.
+            const tenths = Math.round(morgens * 10);
+            const tenthsPerFamily = Math.round(CONFIG.MORGENS_PER_FAMILY * 10); // 6
+
+            const requiredFamilies = Math.ceil(tenths / tenthsPerFamily);
+            const maxYield = Math.round(morgens * CONFIG.YIELD_PER_MORGEN_AT_100 * (fertility / 100));
+
+            // Cobertura: 1 = plantilla suficiente. Con déficit se pierde parte de la cosecha.
+            const coverage = Math.min(1, families / requiredFamilies);
+
+            return {
+                requiredFamilies,
+                maxYield,
+                coverage,
+                effectiveYield: Math.round(maxYield * coverage),
+                deficit: Math.max(0, requiredFamilies - families),
+                surplus: Math.max(0, families - requiredFamilies)
+            };
+        }
+
+        /* ============ 4. ESTADO Y ELEMENTOS ============ */
+        const els = {
+            morgens: $('morgens'), morgensNum: $('morgensNum'),
+            fertility: $('fertility'), fertilityNum: $('fertilityNum'),
+            families: $('assignedFamilies'),
+            famMinus: $('famMinus'), famPlus: $('famPlus'),
+            yieldOut: $('yieldOut'), reqFamOut: $('reqFamOut'), effectiveOut: $('effectiveOut'),
+            coverageFill: $('coverageFill'), coverageText: $('coverageText'), coverageBar: $('coverageBar'),
+            roster: $('roster'), warning: $('warningBox')
+        };
+
+        const state = {
+            morgens:   CONFIG.MORGENS.def,
+            fertility: CONFIG.FERTILITY.def,
+            families:  CONFIG.FAMILIES.def
+        };
+
+        let lastTone = null;
+        const lastText = {};
+
+        /* ============ 5. RENDER ============ */
+        /* ---- Idiomas ---- */
+        const I18N = {
+            en: {
+                title: 'Manor Lords Farming Calculator – Crop Yield, Morgens & Families',
+                metaDesc: 'Free Manor Lords farming calculator: work out your crop yield, how many families you need per morgen, and stop your harvest from rotting.',
+                eyebrow: 'Harvest Calculator', tagline: 'How many hands does your field need?',
+                tParams: 'Your farm', fieldSize: 'Field size', fertility: 'Soil fertility',
+                ariaMorgens: 'Field size in morgens, exact value', ariaFertility: 'Soil fertility in percent, exact value',
+                scaleLow: 'Barren', scaleHigh: 'Optimal',
+                crew: 'Assigned families<small>working the farm</small>',
+                ariaMinus: 'Remove one family', ariaPlus: 'Add one family', ariaLang: 'Language',
+                tRes: 'Projection', yieldLabel: 'Wheat yield', yieldHint: 'food units',
+                famLabel: 'Minimum families', famHint: '0.6 morgens each',
+                coverage: 'Workforce coverage', legCovered: 'Staffed', legMissing: 'Missing', legSpare: 'Spare',
+                effective: 'Estimated effective harvest<small>with current workforce</small>',
+                supportAria: 'Support the project',
+                supportText: 'Did this save your harvest? Help me keep making tools for Manor Lords.',
+                supportBtn: 'Buy me a coffee',
+                footer: 'Estimates based on community knowledge: 1 family ≈ 0.6 morgens · 1 morgen at 100% ≈ 80 food units.<br>Unofficial tool, not affiliated with Hooded Horse or Slavic Magic.',
+                rosterAria: (a, n) => `${a} of ${n} required families assigned`,
+                status_deficit_title: 'Short on hands',
+                status_deficit_body: (r) => `Missing <strong>${r.deficit}</strong> ${r.deficit === 1 ? 'family' : 'families'}. Part of the harvest will rot before winter. Assign more villagers or shrink the field.`,
+                status_optimal_title: 'Balanced workforce',
+                status_optimal_body: () => 'Just enough people to plough, sow and harvest on time.',
+                status_surplus_title: 'Spare hands',
+                status_surplus_body: (r) => `<strong>${r.surplus}</strong> spare ${r.surplus === 1 ? 'family' : 'families'}. They would be better off logging, hunting or gathering.`
+            },
+            es: {
+                title: 'Manor Lords Farming Calculator – Cosechas, Morgens y Familias',
+                metaDesc: 'Calculadora gratuita de agricultura para Manor Lords: calcula el rendimiento de tu cosecha, cuántas familias necesitas por morgen y evita que se pudran los cultivos.',
+                eyebrow: 'Calculadora de cosechas', tagline: 'Cuántas manos necesita tu campo',
+                tParams: 'Tu granja', fieldSize: 'Tamaño del campo', fertility: 'Fertilidad del suelo',
+                ariaMorgens: 'Tamaño del campo en morgens, valor exacto', ariaFertility: 'Fertilidad del suelo en porcentaje, valor exacto',
+                scaleLow: 'Yermo', scaleHigh: 'Óptima',
+                crew: 'Familias asignadas<small>trabajando en la granja</small>',
+                ariaMinus: 'Quitar una familia', ariaPlus: 'Añadir una familia', ariaLang: 'Idioma',
+                tRes: 'Proyección', yieldLabel: 'Rendimiento de trigo', yieldHint: 'unidades de alimento',
+                famLabel: 'Familias mínimas', famHint: '0.6 morgens cada una',
+                coverage: 'Cobertura de plantilla', legCovered: 'Cubierta', legMissing: 'Falta', legSpare: 'Sobra',
+                effective: 'Cosecha efectiva estimada<small>con la plantilla actual</small>',
+                supportAria: 'Apoyar el proyecto',
+                supportText: '¿Te ha salvado la cosecha? Ayúdame a seguir creando herramientas para Manor Lords.',
+                supportBtn: 'Invítame a un café',
+                footer: 'Estimaciones según la lógica de la comunidad: 1 familia ≈ 0.6 morgens · 1 morgen al 100 % ≈ 80 unidades.<br>Herramienta no oficial, sin afiliación con Hooded Horse ni Slavic Magic.',
+                rosterAria: (a, n) => `${a} de ${n} familias necesarias asignadas`,
+                status_deficit_title: 'Faltan manos en el campo',
+                status_deficit_body: (r) => `Faltan <strong>${r.deficit}</strong> ${r.deficit === 1 ? 'familia' : 'familias'}. Parte de la cosecha se pudrirá antes del invierno. Asigna más aldeanos o reduce el campo.`,
+                status_optimal_title: 'Plantilla equilibrada',
+                status_optimal_body: () => 'Hay personal justo para arar, sembrar y cosechar a tiempo.',
+                status_surplus_title: 'Manos de sobra',
+                status_surplus_body: (r) => `Sobran <strong>${r.surplus}</strong> ${r.surplus === 1 ? 'familia' : 'familias'}. Estarían mejor talando, cazando o recolectando.`
+            }
+        };
+
+        const STATUS_ICON = { deficit: 'i-alert', optimal: 'i-check', surplus: 'i-info' };
+
+        /** Solo claves propias del diccionario (evita 'constructor', '__proto__', etc.). */
+        const hasLang = (k) => Object.prototype.hasOwnProperty.call(I18N, k);
+
+        /** Idioma: ?lang=xx > preferencia guardada > idioma del navegador > inglés. */
+        function detectLang() {
+            try {
+                const q = new URLSearchParams(location.search).get('lang');
+                if (q && hasLang(q)) return q;
+            } catch (e) { /* sin acceso a la URL */ }
+            try {
+                const saved = localStorage.getItem('ml-lang');
+                if (saved && hasLang(saved)) return saved;
+            } catch (e) { /* almacenamiento bloqueado */ }
+            return (navigator.language || 'en').toLowerCase().startsWith('es') ? 'es' : 'en';
+        }
+
+        let lang = detectLang();
+        const T = () => I18N[lang];
+
+        /** Escribe un número y anima solo si cambió. */
+        function setNumber(el, value) {
+            const text = String(value);
+            if (lastText[el.id] === text) return;
+            lastText[el.id] = text;
+            el.textContent = text;
+            replay(el, 'tick');
+        }
+
+        function renderRoster(r) {
+            const total = Math.max(r.requiredFamilies, state.families);
+            let html = '';
+            for (let i = 0; i < total; i++) {
+                const cls = i < r.requiredFamilies ? (i < state.families ? 'is-ok' : 'is-missing') : 'is-extra';
+                html += `<svg class="pip ${cls}" aria-hidden="true"><use href="#i-person"/></svg>`;
+            }
+            els.roster.innerHTML = html;
+            els.roster.setAttribute('aria-label',
+                T().rosterAria(Math.min(state.families, r.requiredFamilies), r.requiredFamilies));
+        }
+
+        function render() {
+            const r = computeFarm(state);
+
+            setNumber(els.yieldOut, r.maxYield);
+            setNumber(els.reqFamOut, r.requiredFamilies);
+            setNumber(els.effectiveOut, r.effectiveYield);
+
+            // Medidor de cobertura
+            const pct = Math.round(r.coverage * 100);
+            els.coverageFill.style.width = pct + '%';
+            els.coverageFill.dataset.level = pct >= 100 ? 'ok' : pct >= 60 ? 'mid' : 'low';
+            els.coverageText.textContent = pct + '%';
+            els.coverageBar.setAttribute('aria-valuenow', pct);
+
+            renderRoster(r);
+
+            // Estado
+            const key = r.deficit > 0 ? 'deficit' : r.surplus > 0 ? 'surplus' : 'optimal';
+            const tx = T();
+            els.warning.dataset.tone = key;
+            els.warning.innerHTML = `
+                <svg aria-hidden="true"><use href="#${STATUS_ICON[key]}"/></svg>
+                <div>
+                    <h3>${tx['status_' + key + '_title']}</h3>
+                    <p>${tx['status_' + key + '_body'](r)}</p>
+                </div>`;
+            if (key !== lastTone) {
+                replay(els.warning, 'swap');
+                lastTone = key;
+            }
+        }
+
+        /** Sincroniza los controles con el estado (sin tocar el campo que se está editando). */
+        function syncControls(skip) {
+            if (skip !== els.morgens)      els.morgens.value = state.morgens;
+            if (skip !== els.morgensNum)   els.morgensNum.value = state.morgens.toFixed(1);
+            if (skip !== els.fertility)    els.fertility.value = state.fertility;
+            if (skip !== els.fertilityNum) els.fertilityNum.value = state.fertility;
+            if (skip !== els.families)     els.families.value = state.families;
+            paintSlider(els.morgens);
+            paintSlider(els.fertility);
+        }
+
+        /* ============ 6. EVENTOS ============ */
+        const RANGES = { morgens: [CONFIG.MORGENS, 1], fertility: [CONFIG.FERTILITY, 0], families: [CONFIG.FAMILIES, 0] };
+
+        function update(key, raw, source, commit = false) {
+            const [range, decimals] = RANGES[key];
+            state[key] = sanitize(raw, range, state[key], decimals);
+            // Mientras se teclea no se sobrescribe el campo; al terminar (change/blur) sí.
+            syncControls(commit ? null : source);
+            render();
+        }
+
+        const bind = (el, key) => {
+            el.addEventListener('input',  () => update(key, el.value, el));
+            el.addEventListener('change', () => update(key, el.value, el, true));
+            el.addEventListener('blur',   () => update(key, el.value, el, true));
+        };
+
+        bind(els.morgens, 'morgens');       bind(els.morgensNum, 'morgens');
+        bind(els.fertility, 'fertility');   bind(els.fertilityNum, 'fertility');
+        bind(els.families, 'families');
+
+        // Bloquea caracteres inválidos en campos numéricos (e, +, -)
+        [els.morgensNum, els.fertilityNum, els.families].forEach((el) => {
+            el.addEventListener('keydown', (e) => {
+                if (['e', 'E', '+', '-'].includes(e.key)) e.preventDefault();
+            });
+        });
+
+        els.famMinus.addEventListener('click', () => update('families', state.families - 1, null, true));
+        els.famPlus.addEventListener('click',  () => update('families', state.families + 1, null, true));
+
+        /* ============ 7. IDIOMA E INICIO ============ */
+        /** Aplica las traducciones a todo el documento y vuelve a pintar los resultados. */
+        function applyLang() {
+            const tx = T();
+            document.documentElement.lang = lang;
+            document.title = tx.title;
+            const md = document.querySelector('meta[name="description"]');
+            if (md) md.setAttribute('content', tx.metaDesc);
+            document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = tx[el.dataset.i18n]; });
+            document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = tx[el.dataset.i18nHtml]; });
+            document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', tx[el.dataset.i18nAria]); });
+            document.querySelectorAll('.lang button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+            render();
+        }
+
+        document.querySelectorAll('.lang button').forEach((b) => {
+            b.addEventListener('click', () => {
+                lang = b.dataset.lang;
+                try { localStorage.setItem('ml-lang', lang); } catch (e) { /* ignorar */ }
+                applyLang();
+            });
+        });
+
+        syncControls(null);
+        applyLang();
+    })();
+    </script>
+</body>
+</html>
