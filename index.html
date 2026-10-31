@@ -158,12 +158,17 @@
         /* =========================================================
            CABECERA
         ========================================================= */
-        .masthead { text-align: center; padding: 30px 24px 22px; border-bottom: 1px solid var(--line-soft); }
+        .masthead { position: relative; overflow: hidden; text-align: center; border-bottom: 1px solid var(--line-soft); display: flex; flex-direction: column; justify-content: flex-end; min-height: 285px; }
+        .masthead-in { padding: 0 24px 26px; }
+        .masthead-in > :not(.emblem) { position: relative; z-index: 1; }
+        .masthead-in > .emblem { position: absolute; top: 20px; left: 50%; margin-left: -20px; z-index: 1; }
+        .hero { position: absolute; inset: 0; z-index: 0; }
+        .hero svg { display: block; width: 100%; height: 100%; }
         .emblem { width: 40px; height: 44px; color: var(--bronze-hi); filter: drop-shadow(0 2px 6px rgba(0,0,0,.6)); }
         .eyebrow {
             margin: 10px 0 2px;
             font: 600 13px/1 var(--f-display);
-            letter-spacing: .28em; text-transform: uppercase; color: var(--ink-3);
+            letter-spacing: .28em; text-transform: uppercase; color: var(--ink-2); text-shadow: 0 1px 8px rgba(0, 0, 0, .9);
         }
         h1 {
             margin: 0;
@@ -344,6 +349,120 @@
         .status p { margin: 4px 0 0; font-size: 16px; line-height: 1.4; color: var(--ink-2); }
         .status strong { color: var(--ink); font-weight: 600; }
 
+        /* =========================================================
+           ESCENA, CAMPO VIVO E INTERACCIONES
+        ========================================================= */
+        .panel { animation: rise .8s var(--ease) both; }
+        @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+
+        /* Parallax suave (solo con ratón) */
+        .px { transition: transform .35s ease-out; transform: translate(calc(var(--mx, 0) * var(--d, 0) * 1px), calc(var(--my, 0) * var(--d, 0) * .5px)); }
+        .cloud { animation: drift 120s linear infinite; }
+        @keyframes drift { from { transform: translateX(-180px); } to { transform: translateX(980px); } }
+        .bird { animation: fly 28s linear infinite; }
+        @keyframes fly { 0% { transform: translate(-40px, 0); } 50% { transform: translate(420px, -14px); } 100% { transform: translate(880px, 6px); } }
+        .blades { animation: spin 24s linear infinite; transform-origin: 250px 114px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .sunpulse { animation: pulse 7s ease-in-out infinite alternate; transform-origin: 330px 122px; }
+        @keyframes pulse { from { opacity: .7; transform: scale(.95); } to { opacity: 1; transform: scale(1.07); } }
+        .win { animation: flicker 3.6s ease-in-out infinite alternate; }
+        @keyframes flicker { from { opacity: .45; } to { opacity: 1; } }
+        .stalk { animation: sway 3.6s ease-in-out infinite alternate; }
+        @keyframes sway { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+
+        /* Luciérnagas / polvo dorado */
+        .motes { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .mote {
+            position: absolute; bottom: -12px; width: var(--sz); height: var(--sz); border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 226, 150, .95), rgba(255, 226, 150, 0) 70%);
+            opacity: 0; animation: moteRise var(--dur) linear var(--dl) infinite;
+        }
+        @keyframes moteRise {
+            0% { transform: translate(0, 0); opacity: 0; }
+            12% { opacity: .85; }
+            85% { opacity: .5; }
+            100% { transform: translate(var(--dx), -105vh); opacity: 0; }
+        }
+
+        /* Campo vivo */
+        .fieldview { margin: 0 0 18px; border: 1px solid var(--line-soft); border-radius: 2px; overflow: hidden; background: var(--well); box-shadow: inset 0 0 24px rgba(0, 0, 0, .5); }
+        .fieldview svg { display: block; width: 100%; height: auto; }
+        .fieldview figcaption { padding: 9px 12px 10px; text-align: center; font-size: 14.5px; font-style: italic; color: var(--ink-2); border-top: 1px solid var(--line-soft); }
+        #fieldSvg { --sky-top: #1c1610; --sky-hor: #94713a; }
+        #fieldSvg[data-tone="deficit"] { --sky-hor: #8a4130; }
+        #fieldSvg[data-tone="optimal"] { --sky-hor: #a4803d; }
+        .sk-top { stop-color: var(--sky-top); }
+        .sk-hor { stop-color: var(--sky-hor); transition: stop-color .8s; }
+        .row { animation: rowSway 3.4s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 100%; }
+        .row line { transition: stroke .5s, stroke-width .4s, stroke-dasharray .4s; }
+        .row.rot { animation: none; }
+        @keyframes rowSway { from { transform: skewX(-2.2deg); } to { transform: skewX(2.2deg); } }
+        .vl { animation: walk var(--dur, 9s) ease-in-out infinite alternate; animation-delay: var(--dl, 0s); }
+        @keyframes walk {
+            from { transform: translate(var(--x1), var(--y)) scale(var(--s)); }
+            to   { transform: translate(var(--x2), var(--y)) scale(var(--s)); }
+        }
+        .vl.ghost { animation: none; transform: translate(var(--x1), var(--y)) scale(var(--s)); }
+        .vl.off { display: none; }
+        .vl .fig { animation: bob .55s ease-in-out infinite alternate; }
+        @keyframes bob { to { transform: translateY(-1.3px); } }
+        .vl.ghost .fig { animation: none; }
+        .vl.ok .fig { fill: #d6e69a; stroke: #120e09; stroke-width: .5; }
+        .vl.extra .fig { fill: #86a8c4; stroke: #120e09; stroke-width: .5; }
+        .vl.ghost .fig { fill: none; stroke: #cf6153; stroke-width: .9; stroke-dasharray: 1.5 1; }
+
+        /* Chips y botones secundarios */
+        .chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+        .chips-label { margin-right: 2px; font-size: 14.5px; font-style: italic; color: var(--ink-3); }
+        .chip {
+            min-width: 52px; height: 40px; padding: 0 10px; cursor: pointer;
+            font: 700 17px/1 var(--f-display); font-variant-numeric: lining-nums tabular-nums; color: var(--bronze-hi);
+            background: linear-gradient(#2b2217, #1a140d); border: 1px solid var(--line); border-radius: 2px;
+            transition: background .2s, color .2s, border-color .2s, transform .1s;
+        }
+        .chip:hover { border-color: var(--bronze-hi); }
+        .chip:active { transform: translateY(1px); }
+        .chip.active { color: #1a140d; background: linear-gradient(180deg, #ecd08a, #c49a4c); border-color: #f3dfa8; }
+        .chip:focus-visible, .btn-text:focus-visible { outline: 1px dashed var(--bronze-hi); outline-offset: 2px; }
+        .btn-text {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 44px; padding: 0 16px;
+            font: 700 17px/1 var(--f-display); letter-spacing: .02em; color: var(--bronze-hi);
+            background: transparent; border: 1px solid var(--line); border-radius: 2px; cursor: pointer;
+            transition: background .2s, border-color .2s, transform .1s;
+        }
+        .btn-text:hover { border-color: var(--bronze-hi); background: rgba(217, 184, 111, .07); }
+        .btn-text:active { transform: translateY(1px); }
+        .btn-text svg { width: 18px; height: 18px; flex: none; }
+        .crew-auto { margin-top: 10px; }
+        .field-block { margin-top: 28px; }
+        .actions { margin-top: 14px; }
+
+        /* Estado: sacudida y destellos */
+        .status { position: relative; }
+        .status.shake { animation: shake .5s var(--ease); }
+        @keyframes shake { 0%, 100% { transform: none; } 20% { transform: translateX(-5px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
+        .spark { position: absolute; left: 28px; top: 28px; width: 5px; height: 5px; border-radius: 50%; background: var(--bronze-hi); box-shadow: 0 0 6px rgba(217, 184, 111, .9); pointer-events: none; animation: burst .85s ease-out forwards; }
+        @keyframes burst { from { transform: translate(0, 0) scale(1); opacity: 1; } to { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; } }
+
+        /* Detalles de interacción */
+        @media (hover: hover) {
+            .stat { transition: transform .3s var(--ease), border-color .3s; }
+            .stat:hover { transform: translateY(-3px); border-color: var(--line); }
+        }
+        input[type=range]:active::-webkit-slider-thumb { box-shadow: 0 0 0 1px var(--bronze-hi), 0 0 0 9px rgba(217, 184, 111, .16), 0 3px 8px rgba(0, 0, 0, .7); }
+        .kofi { position: relative; overflow: hidden; }
+        .kofi::after { content: ""; position: absolute; top: 0; bottom: 0; left: -70%; width: 40%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .6), transparent); transform: skewX(-20deg); animation: shine 6.5s ease-in-out 2s infinite; pointer-events: none; }
+        @keyframes shine { 0% { left: -70%; } 22%, 100% { left: 140%; } }
+
+        .toast {
+            position: fixed; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 50;
+            padding: 12px 20px; font: 600 17px/1.2 var(--f-display); color: var(--ink);
+            background: #120e09; border: 1px solid var(--bronze); border-radius: 2px; box-shadow: 0 10px 30px rgba(0, 0, 0, .6);
+            opacity: 0; transform: translate(-50%, 16px); pointer-events: none; transition: opacity .3s, transform .3s var(--ease);
+        }
+        .toast.show { opacity: 1; transform: translate(-50%, 0); }
+        @media (prefers-reduced-motion: reduce) { .motes { display: none; } }
+
         /* Selector de idioma */
         .lang { position: absolute; top: 16px; right: 22px; z-index: 2; display: flex; border: 1px solid var(--line); border-radius: 2px; overflow: hidden; background: var(--well); }
         .lang button {
@@ -444,8 +563,16 @@
                 <path d="M7 3.500v1.500M10 3v2M13 3.500v1.500"/>
             </g>
         </symbol>
+        <symbol id="i-link" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 14a4 4 0 0 0 5.700 0l3-3a4 4 0 0 0-5.700-5.700l-1 1"/>
+                <path d="M14 10a4 4 0 0 0-5.700 0l-3 3a4 4 0 0 0 5.700 5.700l1-1"/>
+            </g>
+        </symbol>
         <symbol id="i-plus"  viewBox="0 0 16 16"><path d="M3 8h10M8 3v10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
     </svg>
+
+    <div class="motes" id="motes" aria-hidden="true"></div>
 
     <main class="wrap">
         <div class="panel">
@@ -457,6 +584,72 @@
             </div>
 
             <header class="masthead">
+                <div class="hero" aria-hidden="true">
+                    <svg viewBox="0 0 800 240" preserveAspectRatio="xMidYMax slice" focusable="false">
+                        <defs>
+                            <linearGradient id="hSky" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0" stop-color="#15100a"/><stop offset=".42" stop-color="#46321d"/><stop offset=".78" stop-color="#b57d3d"/><stop offset="1" stop-color="#d9a35a"/>
+                            </linearGradient>
+                            <radialGradient id="hSun">
+                                <stop offset="0" stop-color="#ffe9b0" stop-opacity=".95"/><stop offset=".35" stop-color="#f1c26a" stop-opacity=".42"/><stop offset="1" stop-color="#f1c26a" stop-opacity="0"/>
+                            </radialGradient>
+                            <pattern id="hFurrow" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(-14)">
+                                <rect width="16" height="16" fill="#252a14"/><rect width="16" height="3.500" fill="#3a4420"/>
+                            </pattern>
+                            <linearGradient id="hFade" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0" stop-color="#120e09" stop-opacity=".2"/><stop offset=".5" stop-color="#120e09" stop-opacity=".04"/><stop offset=".92" stop-color="#1a150f" stop-opacity=".9"/><stop offset="1" stop-color="#1a150f" stop-opacity="1"/>
+                            </linearGradient>
+                        </defs>
+                        <rect width="800" height="240" fill="url(#hSky)"/>
+
+                        <g class="px" style="--d:2">
+                            <circle class="sunpulse" cx="330" cy="122" r="95" fill="url(#hSun)"/>
+                            <circle cx="330" cy="122" r="20" fill="#ffe3a0"/>
+                        </g>
+                        <g class="px" style="--d:3" fill="#f0dcae" opacity=".2">
+                            <g class="cloud" style="animation-delay:-20s"><ellipse cx="0" cy="52" rx="46" ry="8"/><ellipse cx="22" cy="46" rx="26" ry="8"/></g>
+                            <g class="cloud" style="animation-delay:-70s"><ellipse cx="0" cy="84" rx="58" ry="7"/><ellipse cx="-18" cy="79" rx="30" ry="7"/></g>
+                            <g class="cloud" style="animation-delay:-105s"><ellipse cx="0" cy="36" rx="38" ry="6"/></g>
+                        </g>
+                        <g class="px" style="--d:4" fill="none" stroke="#1a140d" stroke-width="1.300" stroke-linecap="round">
+                            <path class="bird" style="animation-delay:-6s" d="M0 66 q4 -4 8 0 q4 -4 8 0"/>
+                            <path class="bird" style="animation-delay:-12s" d="M0 82 q3 -3 6 0 q3 -3 6 0"/>
+                        </g>
+
+                        <g class="px" style="--d:5">
+                            <path d="M0 160 C100 150 140 140 200 142 S340 152 400 150 S540 134 600 138 S740 150 800 152 V240 H0Z" fill="#3a3322"/>
+                            <g transform="translate(26 -18)"><polygon points="241,146 259,146 255,120 245,120" fill="#1d170f"/>
+                            <polygon points="243,120 250,109 257,120" fill="#1d170f"/>
+                            <g class="blades" stroke="#1d170f" stroke-linecap="butt">
+                                <path d="M250 114 V89 M250 114 H275 M250 114 V139 M250 114 H225" stroke-width="2.200"/>
+                                <path d="M252 112 V92 M252 116 H272 M248 116 V136 M248 112 H228" stroke-width="5" opacity=".9"/>
+                            </g>
+                            <circle cx="250" cy="114" r="2.600" fill="#2a2013"/></g>
+                            <g transform="translate(430 -10)" fill="#1d170f">
+                                <polygon points="0,138 0,126 8,118 16,126 16,138"/>
+                                <polygon points="22,138 22,124 32,115 42,124 42,138"/>
+                                <rect x="50" y="108" width="10" height="30"/><polygon points="48,108 55,90 62,108"/><rect x="60" y="124" width="24" height="14"/>
+                                <polygon points="90,138 90,128 97,121 104,128 104,138"/>
+                                <polygon points="108,138 108,130 115,124 122,130 122,138"/>
+                                <g fill="#f4c46e">
+                                    <rect class="win" x="6" y="128" width="4" height="5"/>
+                                    <rect class="win" style="animation-delay:-1.3s" x="30" y="127" width="4" height="6"/>
+                                    <rect class="win" style="animation-delay:-2.1s" x="66" y="128" width="4" height="6"/>
+                                    <rect class="win" style="animation-delay:-.6s" x="96" y="130" width="3.500" height="5"/>
+                                    <rect class="win" style="animation-delay:-2.8s" x="53.500" y="116" width="3" height="6"/>
+                                </g>
+                            </g>
+                        </g>
+                        <g class="px" style="--d:7">
+                            <path d="M0 196 C150 178 260 172 380 184 S620 176 800 190 V240 H0Z" fill="url(#hFurrow)"/>
+                            <path d="M0 196 C150 178 260 172 380 184 S620 176 800 190 V240 H0Z" fill="#14100a" opacity=".35"/>
+                        </g>
+                        <path d="M0 218 C200 206 400 216 800 210 V240 H0Z" fill="#100c07"/>
+                        <g id="heroWheat"></g>
+                        <rect width="800" height="240" fill="url(#hFade)"/>
+                    </svg>
+                </div>
+                <div class="masthead-in">
                 <svg class="emblem" viewBox="0 0 24 27" aria-hidden="true">
                     <path d="M12 1.500 22 5v8c0 6-4.500 10.500-10 12.500C6.500 23.500 2 19 2 13V5z" fill="#14100a" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
                     <use href="#i-wheat" x="5.500" y="4.500" width="13" height="13" style="color:currentColor"/>
@@ -464,6 +657,7 @@
                 <p class="eyebrow" data-i18n="eyebrow">Harvest Calculator</p>
                 <h1>Manor Lords</h1>
                 <p class="tagline" data-i18n="tagline">How many hands does your field need?</p>
+                </div>
             </header>
 
             <div class="cols">
@@ -481,6 +675,13 @@
                         </div>
                         <input type="range" id="morgens" min="0.1" max="5" step="0.1" value="2.5">
                         <div class="scale"><span>0.1</span><span>5.0</span></div>
+                        <div class="chips" role="group" data-i18n-aria="ariaChips" aria-label="Quick field sizes">
+                            <span class="chips-label" data-i18n="presetLabel">Exact fit</span>
+                            <button type="button" class="chip" data-m="0.6" data-f="1">0.6</button>
+                            <button type="button" class="chip" data-m="1.8" data-f="3">1.8</button>
+                            <button type="button" class="chip" data-m="3.0" data-f="5">3.0</button>
+                            <button type="button" class="chip" data-m="4.8" data-f="8">4.8</button>
+                        </div>
                     </div>
 
                     <div class="field">
@@ -503,11 +704,35 @@
                             <button type="button" class="btn" id="famPlus" data-i18n-aria="ariaPlus" aria-label="Add one family"><svg><use href="#i-plus"/></svg></button>
                         </div>
                     </div>
+                <button type="button" class="btn-text crew-auto" id="autoStaff" data-i18n="autoStaff">Assign needed families</button>
+
+                    
                 </section>
 
                 <!-- RESULTADOS -->
                 <section class="col col-results" aria-labelledby="t-res">
                     <h2 class="section-title" id="t-res" data-i18n="tRes">Projection</h2>
+
+                    <figure class="fieldview">
+                        <svg id="fieldSvg" viewBox="0 0 400 210" role="img" aria-labelledby="fieldCap" data-tone="deficit">
+                            <defs>
+                                <linearGradient id="fSky" x1="0" y1="0" x2="0" y2="1"><stop class="sk-top" offset="0"/><stop class="sk-hor" offset="1"/></linearGradient>
+                                <linearGradient id="fGrass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c3a1c"/><stop offset="1" stop-color="#18200f"/></linearGradient>
+                                <radialGradient id="fGlow"><stop offset="0" stop-color="#ffe3a0" stop-opacity=".8"/><stop offset="1" stop-color="#ffe3a0" stop-opacity="0"/></radialGradient>
+                            </defs>
+                            <rect width="400" height="104" fill="url(#fSky)"/>
+                            <circle cx="310" cy="72" r="40" fill="url(#fGlow)"/>
+                            <circle cx="310" cy="72" r="10" fill="#ffd98a"/>
+                            <path d="M0 100 C60 86 120 90 190 97 S320 84 400 94 V106 H0Z" fill="#1d2514"/>
+                            <g fill="#121a0c"><circle cx="22" cy="98" r="6"/><circle cx="31" cy="99" r="5"/><circle cx="92" cy="96" r="5"/><circle cx="250" cy="95" r="6"/><circle cx="259" cy="97" r="4"/><circle cx="372" cy="93" r="6"/></g>
+                            <rect y="100" width="400" height="110" fill="url(#fGrass)"/>
+                            <g transform="translate(46 98)"><polygon points="0,10 0,0 9,-7 18,0 18,10" fill="#2a1d12"/><rect x="7" y="3" width="4" height="7" fill="#120d08"/></g>
+                            <polygon id="fvSoil" fill="#33241a" stroke="#6b4c2a" stroke-width="1"/>
+                            <g id="fvRows"></g>
+                            <g id="fvVil"></g>
+                        </svg>
+                        <figcaption id="fieldCap"></figcaption>
+                    </figure>
 
                     <dl class="stats">
                         <div class="stat">
@@ -540,6 +765,10 @@
                     </p>
 
                     <div class="status" id="warningBox" role="status" aria-live="polite" data-tone="optimal"></div>
+
+                    <div class="actions">
+                        <button type="button" class="btn-text" id="copyLink"><svg aria-hidden="true"><use href="#i-link"/></svg><span data-i18n="copyLink">Copy link</span></button>
+                    </div>
                 </section>
             </div>
 
@@ -558,6 +787,8 @@
             <noscript><p>This calculator needs JavaScript to work. · Esta calculadora necesita JavaScript.</p></noscript>
         </div>
     </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script>
     (() => {
@@ -646,6 +877,165 @@
         let lastTone = null;
         const lastText = {};
 
+        const prefersReduced = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        els.autoStaff = $('autoStaff'); els.copyLink = $('copyLink'); els.toast = $('toast');
+
+        /* Valores compartidos por URL: ?m=2.5&f=60&h=5 (siempre validados) */
+        (function readShared() {
+            try {
+                const q = new URLSearchParams(location.search);
+                if (q.has('m')) state.morgens   = sanitize(q.get('m'), CONFIG.MORGENS,   state.morgens,   1);
+                if (q.has('f')) state.fertility = sanitize(q.get('f'), CONFIG.FERTILITY, state.fertility, 0);
+                if (q.has('h')) state.families  = sanitize(q.get('h'), CONFIG.FAMILIES,  state.families,  0);
+            } catch (e) { /* URL no disponible */ }
+        })();
+
+        /* Generador pseudoaleatorio con semilla (resultado estable entre cargas) */
+        function rng(seed) { return () => (seed = (seed * 16807) % 2147483647) / 2147483647; }
+        const lerp = (a, b, t) => a + (b - a) * t;
+        function mix(a, b, t) {
+            const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+            const c = (sh) => Math.round(((pa >> sh) & 255) * (1 - t) + ((pb >> sh) & 255) * t);
+            return `rgb(${c(16)},${c(8)},${c(0)})`;
+        }
+
+        /* ---- Escena: trigo del primer plano, luciérnagas y parallax ---- */
+        function buildScene() {
+            const r1 = rng(7);
+            let wheat = '';
+            for (let x = -6; x <= 806; x += 11) {
+                const h = 16 + r1() * 20, lean = (r1() - .5) * 6, dl = (r1() * 3.6).toFixed(2);
+                wheat += `<g class="stalk" style="transform-origin:${x}px 240px;animation-delay:-${dl}s">` +
+                    `<path d="M${x} 240 Q${(x + lean / 2).toFixed(1)} ${(240 - h / 2).toFixed(1)} ${(x + lean).toFixed(1)} ${(240 - h).toFixed(1)}" stroke="#6b5726" stroke-width="1.4" fill="none"/>` +
+                    `<ellipse cx="${(x + lean).toFixed(1)}" cy="${(240 - h - 3).toFixed(1)}" rx="1.9" ry="4.2" fill="#d2b062" transform="rotate(${(lean * 2).toFixed(1)} ${(x + lean).toFixed(1)} ${(240 - h - 3).toFixed(1)})"/></g>`;
+            }
+            $('heroWheat').innerHTML = wheat;
+
+            if (!prefersReduced) {
+                const r2 = rng(42), count = window.innerWidth < 600 ? 9 : 16;
+                let motes = '';
+                for (let i = 0; i < count; i++) {
+                    motes += `<i class="mote" style="left:${(r2() * 100).toFixed(1)}%;--sz:${(3 + r2() * 5).toFixed(1)}px;--dur:${(14 + r2() * 14).toFixed(1)}s;--dl:-${(r2() * 20).toFixed(1)}s;--dx:${((r2() - .5) * 120).toFixed(0)}px"></i>`;
+                }
+                $('motes').innerHTML = motes;
+
+                const mast = document.querySelector('.masthead');
+                if (window.matchMedia('(hover: hover)').matches) {
+                    mast.addEventListener('pointermove', (e) => {
+                        const b = mast.getBoundingClientRect();
+                        mast.style.setProperty('--mx', (((e.clientX - b.left) / b.width - .5) * 2).toFixed(3));
+                        mast.style.setProperty('--my', (((e.clientY - b.top) / b.height - .5) * 2).toFixed(3));
+                    });
+                    mast.addEventListener('pointerleave', () => { mast.style.setProperty('--mx', 0); mast.style.setProperty('--my', 0); });
+                }
+            }
+        }
+
+        /* ---- Campo vivo: filas de cultivo y aldeanos ---- */
+        const ROWS = 8, POOL = 12;
+
+        function buildField() {
+            let rows = '', vil = '';
+            for (let i = 0; i < ROWS; i++) {
+                rows += `<g class="row" id="fvRow${i}" style="animation-delay:-${(i * 0.41).toFixed(2)}s"><line id="fvLine${i}"/></g>`;
+            }
+            for (let k = 0; k < POOL; k++) {
+                vil += `<g class="vl off" id="fvV${k}"><g class="fig"><path d="M-3 0 L-2 -7 L2 -7 L3 0Z"/><circle cy="-9.6" r="2.5"/></g></g>`;
+            }
+            $('fvRows').innerHTML = rows;
+            $('fvVil').innerHTML = vil;
+        }
+
+        function renderField(r, tone) {
+            const m = state.morgens, fert = state.fertility / 100;
+            const cx = 200, yB = 200, depth = 48 + (m / 5) * 48, yT = yB - depth;
+            const Wb = 90 + (m / 5) * 300, Wt = Wb * 0.72;
+            $('fieldSvg').dataset.tone = tone;
+            $('fvSoil').setAttribute('points',
+                `${cx - Wt / 2},${yT} ${cx + Wt / 2},${yT} ${cx + Wb / 2},${yB} ${cx - Wb / 2},${yB}`);
+
+            const covered = Math.round(ROWS * r.coverage);
+            const healthy = mix('#8a6b3a', '#b4cc72', fert);
+            for (let i = 0; i < ROWS; i++) {
+                const t = (i + .5) / ROWS, y = yT + t * depth, hw = lerp(Wt, Wb, t) / 2 * .92;
+                const rot = i < ROWS - covered;
+                const line = $('fvLine' + i);
+                line.setAttribute('x1', (cx - hw).toFixed(1)); line.setAttribute('x2', (cx + hw).toFixed(1));
+                line.setAttribute('y1', y.toFixed(1));         line.setAttribute('y2', y.toFixed(1));
+                line.setAttribute('stroke-width', Math.max(1, lerp(3, 9, t) * (.5 + .5 * fert) * (rot ? .55 : 1)).toFixed(2));
+                line.setAttribute('stroke-dasharray', `${lerp(1.1, 2.2, t).toFixed(1)} ${(lerp(2.4, 5.2, t) * (1.7 - fert * .9) * (rot ? 1.7 : 1)).toFixed(1)}`);
+                line.setAttribute('stroke', rot ? '#4b3a29' : healthy);
+                line.setAttribute('opacity', rot ? '.8' : '1');
+                $('fvRow' + i).classList.toggle('rot', rot);
+            }
+
+            for (let k = 0; k < POOL; k++) {
+                const el = $('fvV' + k);
+                const mode = k < state.families ? (k < r.requiredFamilies ? 'ok' : 'extra')
+                                                : (k < r.requiredFamilies ? 'ghost' : 'off');
+                el.classList.remove('ok', 'extra', 'ghost', 'off');
+                el.classList.add(mode);
+                if (mode === 'off') continue;
+                const row = ROWS - 1 - ((k * 3) % ROWS);
+                const t = (row + .5) / ROWS, hw = lerp(Wt, Wb, t) / 2 * .8;
+                const x1 = mode === 'ghost' ? cx - hw + (k / POOL) * 2 * hw : cx - hw;
+                el.style.setProperty('--x1', x1.toFixed(1) + 'px');
+                el.style.setProperty('--x2', (cx + hw).toFixed(1) + 'px');
+                el.style.setProperty('--y', (yT + t * depth + 1).toFixed(1) + 'px');
+                el.style.setProperty('--s', lerp(.85, 1.7, t).toFixed(2));
+                el.style.setProperty('--dur', (7 + (k % 5) * 1.7).toFixed(1) + 's');
+                el.style.setProperty('--dl', '-' + (k * 1.3).toFixed(1) + 's');
+            }
+
+            const text = T().fieldCap(Math.min(state.families, r.requiredFamilies), r.requiredFamilies, Math.round(r.coverage * 100));
+            $('fieldCap').textContent = text;
+        }
+
+        /* ---- Destellos al alcanzar la plantilla óptima ---- */
+        function burst() {
+            if (prefersReduced) return;
+            for (let i = 0; i < 14; i++) {
+                const a = (i / 14) * Math.PI * 2, d = 26 + Math.random() * 30;
+                const sp = document.createElement('i');
+                sp.className = 'spark';
+                sp.style.setProperty('--dx', (Math.cos(a) * d).toFixed(0) + 'px');
+                sp.style.setProperty('--dy', (Math.sin(a) * d).toFixed(0) + 'px');
+                els.warning.appendChild(sp);
+                setTimeout(() => sp.remove(), 900);
+            }
+        }
+
+        /* ---- Aviso breve (toast) ---- */
+        let toastTimer;
+        function toast(msg) {
+            els.toast.textContent = msg;
+            els.toast.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => els.toast.classList.remove('show'), 2200);
+        }
+
+        function shareUrl() {
+            const base = location.href.split('#')[0].split('?')[0];
+            const q = new URLSearchParams({ m: state.morgens.toFixed(1), f: String(state.fertility), h: String(state.families), lang });
+            return base + '?' + q.toString();
+        }
+
+        async function copyLink() {
+            const url = shareUrl();
+            let ok = false;
+            try { await navigator.clipboard.writeText(url); ok = true; }
+            catch (e) {
+                try {
+                    const ta = document.createElement('textarea');
+                    ta.value = url; ta.setAttribute('readonly', '');
+                    ta.style.position = 'fixed'; ta.style.opacity = '0';
+                    document.body.appendChild(ta); ta.select();
+                    ok = document.execCommand('copy'); ta.remove();
+                } catch (e2) { ok = false; }
+            }
+            toast(ok ? T().toastCopied : T().toastFail);
+        }
+
         /* ============ 5. RENDER ============ */
         /* ---- Idiomas ---- */
         const I18N = {
@@ -665,6 +1055,11 @@
                 supportAria: 'Support the project',
                 supportText: 'Did this save your harvest? Help me keep making tools for Manor Lords.',
                 supportBtn: 'Buy me a coffee',
+                tField: 'Your field', presetLabel: 'Exact fit', ariaChips: 'Quick field sizes',
+                autoStaff: 'Assign needed families', copyLink: 'Copy link',
+                toastCopied: 'Link copied', toastFail: 'Could not copy – copy the address bar instead',
+                chipTitle: (f) => `Fits exactly ${f} ${f === 1 ? 'family' : 'families'}`,
+                fieldCap: (a, n, pct) => `${a} of ${n} families working · ${pct}% of the field tended`,
                 footer: 'Estimates based on community knowledge: 1 family ≈ 0.6 morgens · 1 morgen at 100% ≈ 80 food units.<br>Unofficial tool, not affiliated with Hooded Horse or Slavic Magic.',
                 rosterAria: (a, n) => `${a} of ${n} required families assigned`,
                 status_deficit_title: 'Short on hands',
@@ -690,6 +1085,11 @@
                 supportAria: 'Apoyar el proyecto',
                 supportText: '¿Te ha salvado la cosecha? Ayúdame a seguir creando herramientas para Manor Lords.',
                 supportBtn: 'Invítame a un café',
+                tField: 'Tu campo', presetLabel: 'Ajuste exacto', ariaChips: 'Tamaños rápidos',
+                autoStaff: 'Asignar familias necesarias', copyLink: 'Copiar enlace',
+                toastCopied: 'Enlace copiado', toastFail: 'No se pudo copiar: copia la barra de direcciones',
+                chipTitle: (f) => `Ajuste exacto para ${f} ${f === 1 ? 'familia' : 'familias'}`,
+                fieldCap: (a, n, pct) => `${a} de ${n} familias trabajando · ${pct} % del campo atendido`,
                 footer: 'Estimaciones según la lógica de la comunidad: 1 familia ≈ 0.6 morgens · 1 morgen al 100 % ≈ 80 unidades.<br>Herramienta no oficial, sin afiliación con Hooded Horse ni Slavic Magic.',
                 rosterAria: (a, n) => `${a} de ${n} familias necesarias asignadas`,
                 status_deficit_title: 'Faltan manos en el campo',
@@ -723,12 +1123,21 @@
         const T = () => I18N[lang];
 
         /** Escribe un número y anima solo si cambió. */
+        const numRaf = {}, numLast = {};
         function setNumber(el, value) {
-            const text = String(value);
-            if (lastText[el.id] === text) return;
-            lastText[el.id] = text;
-            el.textContent = text;
-            replay(el, 'tick');
+            const to = Number(value);
+            const from = el.id in numLast ? numLast[el.id] : 0; // la primera vez cuenta desde 0
+            if (el.id in numLast && from === to) return;
+            numLast[el.id] = to;
+            cancelAnimationFrame(numRaf[el.id]);
+            if (prefersReduced || from === to) { el.textContent = String(to); return; }
+            const t0 = performance.now(), dur = 520;
+            const step = (now) => {
+                const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+                el.textContent = String(Math.round(from + (to - from) * e));
+                if (p < 1) numRaf[el.id] = requestAnimationFrame(step);
+            };
+            numRaf[el.id] = requestAnimationFrame(step);
         }
 
         function renderRoster(r) {
@@ -770,9 +1179,13 @@
                     <p>${tx['status_' + key + '_body'](r)}</p>
                 </div>`;
             if (key !== lastTone) {
-                replay(els.warning, 'swap');
+                els.warning.classList.remove('swap', 'shake');
+                replay(els.warning, key === 'deficit' && lastTone !== null ? 'shake' : 'swap');
+                if (key === 'optimal' && lastTone !== null) burst();
                 lastTone = key;
             }
+            renderField(r, key);
+            document.querySelectorAll('.chip').forEach((c) => c.classList.toggle('active', Number(c.dataset.m) === state.morgens));
         }
 
         /** Sincroniza los controles con el estado (sin tocar el campo que se está editando). */
@@ -829,6 +1242,7 @@
             document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = tx[el.dataset.i18nHtml]; });
             document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', tx[el.dataset.i18nAria]); });
             document.querySelectorAll('.lang button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+            document.querySelectorAll('.chip').forEach((c) => { c.title = tx.chipTitle(+c.dataset.f); c.setAttribute('aria-label', c.dataset.m + ' – ' + tx.chipTitle(+c.dataset.f)); });
             render();
         }
 
@@ -840,6 +1254,12 @@
             });
         });
 
+        els.autoStaff.addEventListener('click', () => update('families', computeFarm(state).requiredFamilies, null, true));
+        els.copyLink.addEventListener('click', copyLink);
+        document.querySelectorAll('.chip').forEach((c) => c.addEventListener('click', () => update('morgens', c.dataset.m, null, true)));
+
+        buildScene();
+        buildField();
         syncControls(null);
         applyLang();
     })();
