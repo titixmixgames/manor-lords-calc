@@ -1,0 +1,13 @@
+{
+  "name": "manor-lords-calc",
+  "version": "1.0.0",
+  "description": "Manor Lords Farming Calculator – Crop Yield, Morgens & Families",
+  "scripts": {
+    "install-analytics": "npm install"
+  },
+  "dependencies": {
+    "@vercel/analytics": "^1.4.1"
+  },
+  "author": "Manor Lords Farming Calculator",
+  "license": "MIT"
+}
